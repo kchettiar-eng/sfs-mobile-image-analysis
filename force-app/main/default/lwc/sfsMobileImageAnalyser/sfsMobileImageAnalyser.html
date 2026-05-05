@@ -1,0 +1,159 @@
+<template>
+    <article class="analyser-card">
+
+        <!-- ── Gradient Header ── -->
+        <div class="analyser-header">
+            <div class="analyser-header-left">
+                <div class="header-icon-wrap">
+                    <lightning-icon icon-name="utility:einstein" size="small" alternative-text="AI"></lightning-icon>
+                </div>
+                <h1 class="header-title">Image Analysis</h1>
+            </div>
+        </div>
+
+        <!-- ── Step Progress Bar ── -->
+        <div class="step-bar">
+            <div class={stepClass1}>
+                <span class={stepDot1}>1</span>
+                <span class="step-label">Select Image</span>
+            </div>
+            <div class={stepConnector12}></div>
+            <div class={stepClass2}>
+                <span class={stepDot2}>2</span>
+                <span class="step-label">Review &amp; Analyse</span>
+            </div>
+            <div class={stepConnector23}></div>
+            <div class={stepClass3}>
+                <span class={stepDot3}>3</span>
+                <span class="step-label">View Results</span>
+            </div>
+        </div>
+
+        <!-- ── Offline Banner ── -->
+        <template lwc:if={isOffline}>
+            <div class="offline-banner">
+                <lightning-icon icon-name="utility:offline" size="x-small" variant="warning" alternative-text="Offline"></lightning-icon>
+                <span class="slds-var-m-left_x-small">You are currently offline. AI analysis requires an internet connection.</span>
+            </div>
+        </template>
+
+        <!-- ── Body ── -->
+        <div class="analyser-body">
+
+            <!-- Hidden file input -->
+            <input type="file" class="file-input" accept={acceptedFormats} onchange={handleFileUpload} aria-label="Select file to upload" />
+
+            <!-- Dropzone (no file selected) -->
+            <template lwc:if={showDropzone}>
+                <div class="dropzone" onclick={triggerFileInput}>
+                    <div class="dropzone-icon-wrap">
+                        <lightning-icon icon-name="utility:upload" size="medium" alternative-text="Upload"></lightning-icon>
+                    </div>
+                    <h3 class="dropzone-title">Add a photo to analyse</h3>
+                    <p class="dropzone-hint">Supports JPG, PNG &nbsp;·&nbsp; Max 10 MB</p>
+                    <div class="dropzone-actions" onclick={stopPropagation}>
+                        <lightning-button label="Take Photo" variant="brand" icon-name="utility:camera" onclick={triggerFileInput}></lightning-button>
+                        <lightning-button label="Upload Image" variant="neutral" icon-name="utility:upload" onclick={triggerFileInput}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Image preview + action panel (file selected) -->
+            <template lwc:if={hasSelectedFile}>
+                <div class="preview-stack">
+                    <!-- Image preview panel -->
+                    <div class="image-panel">
+                        <div class="card-header-label">Selected Photo</div>
+                        <div class="image-panel-inner">
+                            <img src={imagePreviewUrl} alt="Selected image preview" class="image-preview-img" />
+                        </div>
+                        <div class="image-panel-footer">
+                            <span class="img-filename">{selectedFileName}</span>
+                            <template lwc:if={formattedFileSize}>
+                                <span class="img-filesize">{formattedFileSize}</span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- CTA + change source -->
+                    <lightning-button
+                        label="Analyse Image"
+                        variant="brand"
+                        icon-name="utility:einstein"
+                        onclick={handleAnalyse}
+                        disabled={isAnalyseDisabled}
+                        class="analyse-button">
+                    </lightning-button>
+
+                    <lightning-button
+                        label="Upload a Different Image"
+                        variant="neutral"
+                        icon-name="utility:upload"
+                        onclick={triggerFileInput}
+                        disabled={isProcessing}
+                        class="change-button">
+                    </lightning-button>
+                </div>
+            </template>
+
+            <!-- Loading State -->
+            <template lwc:if={isProcessing}>
+                <div class="loading-card slds-var-m-top_medium">
+                    <lightning-spinner alternative-text="Analysing..." size="medium"></lightning-spinner>
+                    <p class="loading-title slds-var-m-top_medium">Analysing Image</p>
+                    <p class="slds-text-body_small slds-text-color_weak">This may take a few moments</p>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template lwc:if={hasError}>
+                <div class="error-card slds-var-m-top_medium">
+                    <lightning-icon icon-name="utility:error" variant="error" size="small" alternative-text="Error"></lightning-icon>
+                    <p class="error-message slds-var-m-left_small">{errorMessage}</p>
+                </div>
+            </template>
+
+            <!-- Results -->
+            <template lwc:if={hasResult}>
+                <div class="results-section slds-var-m-top_large">
+                    <div class="results-header-bar">
+                        <div class="results-title-group">
+                            <div class="success-dot">
+                                <lightning-icon icon-name="utility:check" size="x-small" alternative-text="Success"></lightning-icon>
+                            </div>
+                            <h2 class="results-title">AI Analysis Complete</h2>
+                        </div>
+                    </div>
+
+                    <div class="results-card slds-var-m-top_small">
+                        <pre class="results-text">{aiResponse}</pre>
+
+                        <div class="results-actions slds-var-m-top_medium">
+                            <lightning-button-group>
+                                <lightning-button label="Save to Service Appointment" variant="success" icon-name="utility:save" onclick={handleSave}></lightning-button>
+                                <lightning-button label="Copy" icon-name="utility:copy" onclick={handleCopyResult}></lightning-button>
+                                <lightning-button label="Analyse Another" icon-name="utility:refresh" onclick={handleAnalyseAnother}></lightning-button>
+                            </lightning-button-group>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Save Success State -->
+            <template lwc:if={hasSaved}>
+                <div class="save-success-card slds-var-m-top_large">
+                    <div class="save-success-icon">
+                        <lightning-icon icon-name="utility:check" size="large" alternative-text="Saved"></lightning-icon>
+                    </div>
+                    <h2 class="save-success-title">Analysis Saved</h2>
+                    <div class="save-success-actions slds-var-m-top_medium">
+                        <lightning-button label="Done" variant="brand" onclick={handleDone} class="save-success-btn"></lightning-button>
+                        <lightning-button label="Analyse Another" variant="neutral" icon-name="utility:refresh" onclick={handleAnalyseAnother}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+        </div>
+
+    </article>
+</template>

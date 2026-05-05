@@ -1,0 +1,349 @@
+/* ── Card shell ── */
+.analyser-card {
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+}
+
+/* ── Gradient header ── */
+.analyser-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #032e61 0%, #0176d3 100%);
+    color: #fff;
+}
+.analyser-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.header-icon-wrap {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.header-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+/* ── Step progress bar ── */
+.step-bar {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e0e5ee;
+}
+.step-item {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    font-size: .75rem;
+    color: #706e6b;
+}
+.step-item.step-active  { color: #0176d3; font-weight: 600; }
+.step-item.step-complete { color: #2e844a; font-weight: 600; }
+.step-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #c9c7c5;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .625rem;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+    color: #706e6b;
+}
+.step-dot--active   { border-color: #0176d3 !important; background: #0176d3 !important; color: #fff !important; }
+.step-dot--complete { border-color: #2e844a !important; background: #2e844a !important; color: #fff !important; }
+.step-connector {
+    flex: 0 0 24px;
+    height: 2px;
+    background: #e0e5ee;
+    margin: 0 4px;
+}
+.step-connector--done { background: #2e844a; }
+.step-label { white-space: nowrap; }
+
+/* ── Offline banner ── */
+.offline-banner {
+    display: flex;
+    align-items: center;
+    background: #fef3e2;
+    border-left: 4px solid #fe9339;
+    padding: 10px 20px;
+    font-size: .8125rem;
+    color: #3e3e3c;
+}
+
+/* ── Body ── */
+.analyser-body {
+    padding: 20px;
+}
+
+/* ── Hidden file input ── */
+.file-input {
+    display: none;
+}
+
+/* ── Dropzone ── */
+.dropzone {
+    border: 2px dashed #b0bec5;
+    border-radius: 8px;
+    background: #fafbfc;
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+}
+.dropzone:hover {
+    border-color: #0176d3;
+    background: #f0f7ff;
+}
+.dropzone-icon-wrap {
+    width: 56px;
+    height: 56px;
+    background: #e8f3ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+.dropzone-title {
+    margin: 0 0 6px;
+    font-size: .9375rem;
+    font-weight: 600;
+    color: #181818;
+}
+.dropzone-hint {
+    margin: 0 0 18px;
+    font-size: .8125rem;
+    color: #706e6b;
+}
+.dropzone-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ── Preview stack (file selected) ── */
+.preview-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── Image panel ── */
+.image-panel {
+    background: #f8f9fb;
+    border: 1px solid #e0e5ee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.card-header-label {
+    padding: 8px 14px;
+    font-size: .6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #706e6b;
+    border-bottom: 1px solid #e0e5ee;
+    background: #f8f9fb;
+}
+.image-panel-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    padding: 16px;
+    background: #fff;
+}
+.image-preview-img {
+    max-width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+}
+.image-panel-footer {
+    background: #f0f2f6;
+    border-top: 1px solid #e0e5ee;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.img-filename {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: #181818;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.img-filesize {
+    font-size: .75rem;
+    color: #706e6b;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+/* ── Buttons ── */
+.analyse-button,
+.change-button {
+    width: 100%;
+}
+
+/* ── Loading ── */
+.loading-card {
+    text-align: center;
+    background: #f0f7ff;
+    border: 1px solid #b5d4f5;
+    border-radius: 8px;
+    padding: 24px;
+    position: relative;
+    min-height: 80px;
+}
+.loading-title {
+    font-size: .9375rem;
+    color: #032e61;
+    font-weight: 600;
+}
+
+/* ── Error ── */
+.error-card {
+    display: flex;
+    align-items: flex-start;
+    background: #fde8e8;
+    border: 1px solid #f6a4a4;
+    border-radius: 8px;
+    padding: 14px 18px;
+}
+.error-message {
+    font-size: .875rem;
+    color: #8e1e1e;
+    margin: 0;
+}
+
+/* ── Results ── */
+.results-section { padding-top: 1rem; }
+.results-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.results-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.success-dot {
+    width: 22px;
+    height: 22px;
+    background: #2e844a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.results-title {
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: #181818;
+}
+.results-card {
+    background: #fafbfc;
+    border: 1px solid #e0e5ee;
+    border-radius: 8px;
+    padding: 16px;
+}
+.results-text {
+    white-space: pre-wrap;
+    font-family: 'Salesforce Sans', Arial, sans-serif;
+    font-size: .8125rem;
+    line-height: 1.6;
+    color: #3e3e3c;
+    margin: 0;
+    min-height: 200px;
+}
+.results-actions {
+    padding-top: 12px;
+    border-top: 1px solid #e0e5ee;
+    margin-top: 12px;
+}
+
+/* ── Save Success ── */
+.save-success-card {
+    text-align: center;
+    padding: 32px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.save-success-icon {
+    width: 64px;
+    height: 64px;
+    background: #2e844a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.save-success-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #181818;
+    margin: 0;
+}
+.save-success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+.save-success-btn {
+    width: 100%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+    .dropzone-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+/* ── Print ── */
+@media print {
+    .analyser-header,
+    .step-bar,
+    .dropzone,
+    .change-button {
+        display: none;
+    }
+}
