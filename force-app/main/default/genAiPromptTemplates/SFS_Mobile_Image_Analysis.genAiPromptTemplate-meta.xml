@@ -65,7 +65,16 @@ Your task is to:
 
 ## OUTPUT FORMAT
 
-Return a well-structured response using the format below. Only include sections where relevant information is present.
+Return a well-structured response using the exact format below. Only include sections where relevant information is present.
+
+FORMATTING RULES — follow these precisely:
+- Section headings (lines starting with # or ##) are rendered as bold titles — write them in plain text, do NOT wrap them in ** markers
+- Use **bold** only for inline field labels such as "Item Type:", "Overall Condition:", etc.
+- Bullet points use a leading "- " character
+- The "## Recommended Actions" section and all its content (sub-headings and bullet points) must be written normally — the display layer will render this section in red automatically
+- Do NOT use HTML tags in your response
+
+---
 
 # Image Analysis Summary
 

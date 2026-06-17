@@ -40,49 +40,6 @@
     line-height: 1.2;
 }
 
-/* ── Step progress bar ── */
-.step-bar {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    background: #f8f9fb;
-    border-bottom: 1px solid #e0e5ee;
-}
-.step-item {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: .75rem;
-    color: #706e6b;
-}
-.step-item.step-active  { color: #0176d3; font-weight: 600; }
-.step-item.step-complete { color: #2e844a; font-weight: 600; }
-.step-dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid #c9c7c5;
-    background: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .625rem;
-    font-weight: 700;
-    margin-right: 8px;
-    flex-shrink: 0;
-    color: #706e6b;
-}
-.step-dot--active   { border-color: #0176d3 !important; background: #0176d3 !important; color: #fff !important; }
-.step-dot--complete { border-color: #2e844a !important; background: #2e844a !important; color: #fff !important; }
-.step-connector {
-    flex: 0 0 24px;
-    height: 2px;
-    background: #e0e5ee;
-    margin: 0 4px;
-}
-.step-connector--done { background: #2e844a; }
-.step-label { white-space: nowrap; }
-
 /* ── Offline banner ── */
 .offline-banner {
     display: flex;
@@ -281,19 +238,55 @@
     border-radius: 8px;
     padding: 16px;
 }
-.results-text {
-    white-space: pre-wrap;
-    font-family: 'Salesforce Sans', Arial, sans-serif;
+.results-rich-text-wrap {
+    min-height: 200px;
     font-size: .8125rem;
     line-height: 1.6;
     color: #3e3e3c;
-    margin: 0;
-    min-height: 200px;
+}
+.results-rich-text-wrap h2 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: .75rem 0 .25rem;
+    color: #032e61;
+}
+.results-rich-text-wrap h3 {
+    font-size: .875rem;
+    font-weight: 700;
+    margin: .625rem 0 .25rem;
+    color: #181818;
+}
+.results-rich-text-wrap h4 {
+    font-size: .8125rem;
+    font-weight: 700;
+    margin: .5rem 0 .125rem;
+    color: #3e3e3c;
+}
+.results-rich-text-wrap hr {
+    border: none;
+    border-top: 1px solid #e0e5ee;
+    margin: .75rem 0;
+}
+.results-rich-text-wrap ul {
+    padding-left: 1.25rem;
+    margin: .25rem 0;
+}
+.results-rich-text-wrap li {
+    margin-bottom: .2rem;
+}
+.results-rich-text-wrap p {
+    margin: .25rem 0;
 }
 .results-actions {
     padding-top: 12px;
     border-top: 1px solid #e0e5ee;
     margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.action-button {
+    width: 100%;
 }
 
 /* ── Save Success ── */

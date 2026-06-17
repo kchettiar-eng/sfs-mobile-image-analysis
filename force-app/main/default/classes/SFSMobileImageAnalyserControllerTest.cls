@@ -88,6 +88,61 @@ private class SFSMobileImageAnalyserControllerTest {
     }
 
     @isTest
+    static void testSaveAnalysisMissingRecordId() {
+        Test.startTest();
+        try {
+            SFSMobileImageAnalyserController.saveAnalysis(null, 'Some analysis text');
+            System.assert(false, 'Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Record Id'), 'Should mention missing Record Id');
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testSaveAnalysisMissingText() {
+        ServiceAppointment sa = [SELECT Id FROM ServiceAppointment LIMIT 1];
+        Test.startTest();
+        try {
+            SFSMobileImageAnalyserController.saveAnalysis(sa.Id, null);
+            System.assert(false, 'Should have thrown AuraHandledException');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Analysis text'), 'Should mention missing analysis text');
+        }
+        Test.stopTest();
+    }
+
+    @isTest
+    static void testSaveAnalysisWritesToServiceNote() {
+        ServiceAppointment sa = [SELECT Id FROM ServiceAppointment LIMIT 1];
+        Test.startTest();
+        SFSMobileImageAnalyserController.saveAnalysis(sa.Id, 'Test analysis result');
+        Test.stopTest();
+        ServiceAppointment updated = [SELECT ServiceNote FROM ServiceAppointment WHERE Id = :sa.Id];
+        System.assert(
+            updated.ServiceNote.contains('Test analysis result'),
+            'ServiceNote should contain the analysis text'
+        );
+        System.assert(
+            updated.ServiceNote.contains('AI Image Analysis'),
+            'ServiceNote should contain the section header'
+        );
+    }
+
+    @isTest
+    static void testSaveAnalysisAppendsToExistingNote() {
+        ServiceAppointment sa = [SELECT Id FROM ServiceAppointment LIMIT 1];
+        sa.ServiceNote = 'Existing technician note.';
+        update sa;
+        Test.startTest();
+        SFSMobileImageAnalyserController.saveAnalysis(sa.Id, 'New AI analysis');
+        Test.stopTest();
+        ServiceAppointment updated = [SELECT ServiceNote FROM ServiceAppointment WHERE Id = :sa.Id];
+        System.assert(updated.ServiceNote.contains('Existing technician note.'), 'Original note should be preserved');
+        System.assert(updated.ServiceNote.contains('New AI analysis'), 'New analysis should be appended');
+    }
+
+    @isTest
     static void testFileLinkedToServiceAppointment() {
         ServiceAppointment sa = [SELECT Id FROM ServiceAppointment LIMIT 1];
         String base64Image = EncodingUtil.base64Encode(Blob.valueOf('Test image data'));

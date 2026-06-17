@@ -96,4 +96,31 @@ public with sharing class SFSMobileImageAnalyserController {
 
         throw new AuraHandledException('No response received from the AI model. Please try again.');
     }
+
+    @AuraEnabled
+    public static void saveAnalysis(String recordId, String analysisText) {
+        try {
+            if (String.isBlank(recordId)) {
+                throw new AuraHandledException('Record Id is required.');
+            }
+            if (String.isBlank(analysisText)) {
+                throw new AuraHandledException('Analysis text is required.');
+            }
+            ServiceAppointment sa = [
+                SELECT Id, ServiceNote
+                FROM ServiceAppointment
+                WHERE Id = :recordId
+                LIMIT 1
+            ];
+            String timestamp = DateTime.now().format('dd MMM yyyy HH:mm', UserInfo.getTimeZone().getID());
+            String newEntry = '--- AI Image Analysis (' + timestamp + ') ---\n' + analysisText;
+            sa.ServiceNote = String.isBlank(sa.ServiceNote) ? newEntry : sa.ServiceNote + '\n\n' + newEntry;
+            update sa;
+        } catch (AuraHandledException e) {
+            throw e;
+        } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'SFSMobileImageAnalyserController.saveAnalysis error: ' + e.getMessage());
+            throw new AuraHandledException('Error saving analysis: ' + e.getMessage());
+        }
+    }
 }

@@ -11,24 +11,6 @@
             </div>
         </div>
 
-        <!-- ── Step Progress Bar ── -->
-        <div class="step-bar">
-            <div class={stepClass1}>
-                <span class={stepDot1}>1</span>
-                <span class="step-label">Select Image</span>
-            </div>
-            <div class={stepConnector12}></div>
-            <div class={stepClass2}>
-                <span class={stepDot2}>2</span>
-                <span class="step-label">Review &amp; Analyse</span>
-            </div>
-            <div class={stepConnector23}></div>
-            <div class={stepClass3}>
-                <span class={stepDot3}>3</span>
-                <span class="step-label">View Results</span>
-            </div>
-        </div>
-
         <!-- ── Offline Banner ── -->
         <template lwc:if={isOffline}>
             <div class="offline-banner">
@@ -50,10 +32,9 @@
                         <lightning-icon icon-name="utility:upload" size="medium" alternative-text="Upload"></lightning-icon>
                     </div>
                     <h3 class="dropzone-title">Add a photo to analyse</h3>
-                    <p class="dropzone-hint">Supports JPG, PNG &nbsp;·&nbsp; Max 10 MB</p>
+                    <p class="dropzone-hint">Supports JPG, PNG &nbsp;·&nbsp; Max 1 MB</p>
                     <div class="dropzone-actions" onclick={stopPropagation}>
-                        <lightning-button label="Take Photo" variant="brand" icon-name="utility:camera" onclick={triggerFileInput}></lightning-button>
-                        <lightning-button label="Upload Image" variant="neutral" icon-name="utility:upload" onclick={triggerFileInput}></lightning-button>
+                        <lightning-button label="Add Photo" variant="brand" icon-name="utility:camera" onclick={triggerFileInput}></lightning-button>
                     </div>
                 </div>
             </template>
@@ -126,14 +107,12 @@
                     </div>
 
                     <div class="results-card slds-var-m-top_small">
-                        <pre class="results-text">{aiResponse}</pre>
+                        <div class="results-rich-text-wrap"></div>
 
                         <div class="results-actions slds-var-m-top_medium">
-                            <lightning-button-group>
-                                <lightning-button label="Save to Service Appointment" variant="success" icon-name="utility:save" onclick={handleSave}></lightning-button>
-                                <lightning-button label="Copy" icon-name="utility:copy" onclick={handleCopyResult}></lightning-button>
-                                <lightning-button label="Analyse Another" icon-name="utility:refresh" onclick={handleAnalyseAnother}></lightning-button>
-                            </lightning-button-group>
+                            <lightning-button label="Save to Service Appointment" variant="success" icon-name="utility:save" onclick={handleSave} disabled={isSaving} class="action-button"></lightning-button>
+                            <lightning-button label="Copy" icon-name="utility:copy" onclick={handleCopyResult} class="action-button"></lightning-button>
+                            <lightning-button label="Analyse Another" icon-name="utility:refresh" onclick={handleAnalyseAnother} class="action-button"></lightning-button>
                         </div>
                     </div>
                 </div>
