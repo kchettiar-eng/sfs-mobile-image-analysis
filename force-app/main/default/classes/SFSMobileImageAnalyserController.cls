@@ -97,7 +97,10 @@ public with sharing class SFSMobileImageAnalyserController {
 
             ServiceAppointment sa = [SELECT Id, ServiceNote FROM ServiceAppointment WHERE Id = :recordId LIMIT 1];
             String timestamp = DateTime.now().format('dd MMM yyyy HH:mm', UserInfo.getTimeZone().getID());
-            String newEntry = '--- AI Image Analysis (' + timestamp + ') ---\n' + analysisText;
+            Integer imageNumber = String.isBlank(sa.ServiceNote)
+                ? 1
+                : sa.ServiceNote.countMatches('--- AI Image Analysis') + 1;
+            String newEntry = '--- AI Image Analysis ' + imageNumber + ' (' + timestamp + ') ---\n' + analysisText;
             sa.ServiceNote = String.isBlank(sa.ServiceNote) ? newEntry : sa.ServiceNote + '\n\n' + newEntry;
             update sa;
 
