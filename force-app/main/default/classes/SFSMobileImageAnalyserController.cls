@@ -101,20 +101,29 @@ public with sharing class SFSMobileImageAnalyserController {
             sa.ServiceNote = String.isBlank(sa.ServiceNote) ? newEntry : sa.ServiceNote + '\n\n' + newEntry;
             update sa;
 
+            // File linking is best-effort — a failure must NOT roll back the ServiceNote update above.
             if (String.isNotBlank(contentDocumentId)) {
-                List<ContentDocumentLink> existing = [
-                    SELECT Id
-                    FROM ContentDocumentLink
-                    WHERE ContentDocumentId = :contentDocumentId AND LinkedEntityId = :recordId
-                    LIMIT 1
-                ];
-                if (existing.isEmpty()) {
-                    ContentDocumentLink cdl = new ContentDocumentLink();
-                    cdl.ContentDocumentId = contentDocumentId;
-                    cdl.LinkedEntityId = recordId;
-                    cdl.ShareType = 'V';
-                    cdl.Visibility = 'AllUsers';
-                    insert cdl;
+                try {
+                    List<ContentDocumentLink> existing = [
+                        SELECT Id
+                        FROM ContentDocumentLink
+                        WHERE ContentDocumentId = :contentDocumentId AND LinkedEntityId = :recordId
+                        LIMIT 1
+                    ];
+                    if (existing.isEmpty()) {
+                        ContentDocumentLink cdl = new ContentDocumentLink();
+                        cdl.ContentDocumentId = contentDocumentId;
+                        cdl.LinkedEntityId = recordId;
+                        cdl.ShareType = 'V';
+                        cdl.Visibility = 'AllUsers';
+                        insert cdl;
+                    }
+                } catch (Exception linkEx) {
+                    System.debug(
+                        LoggingLevel.WARN,
+                        'SFSMobileImageAnalyserController.saveAnalysis — file link failed (ServiceNote saved): ' +
+                        linkEx.getMessage()
+                    );
                 }
             }
         } catch (AuraHandledException e) {
