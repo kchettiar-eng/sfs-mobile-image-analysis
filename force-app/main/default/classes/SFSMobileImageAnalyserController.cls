@@ -6,8 +6,15 @@
 public with sharing class SFSMobileImageAnalyserController {
     private static final String PROMPT_TEMPLATE_API_NAME = 'SFS_Mobile_Image_Analysis';
 
+    public class AnalysisResult {
+        @AuraEnabled
+        public String aiResponse;
+        @AuraEnabled
+        public String contentDocumentId;
+    }
+
     @AuraEnabled
-    public static String analyseImage(String recordId, String fileName, String base64Data) {
+    public static AnalysisResult analyseImage(String recordId, String fileName, String base64Data) {
         Savepoint sp = Database.setSavepoint();
         try {
             if (String.isBlank(fileName)) {
@@ -24,11 +31,6 @@ public with sharing class SFSMobileImageAnalyserController {
             cv.PathOnClient = fileName;
             cv.VersionData = fileBlob;
             cv.Origin = 'H';
-
-            if (String.isNotBlank(recordId)) {
-                cv.FirstPublishLocationId = recordId;
-            }
-
             insert cv;
 
             ContentVersion inserted = [
@@ -38,24 +40,10 @@ public with sharing class SFSMobileImageAnalyserController {
                 LIMIT 1
             ];
 
-            if (String.isNotBlank(recordId)) {
-                List<ContentDocumentLink> existing = [
-                    SELECT Id
-                    FROM ContentDocumentLink
-                    WHERE ContentDocumentId = :inserted.ContentDocumentId AND LinkedEntityId = :recordId
-                    LIMIT 1
-                ];
-                if (existing.isEmpty()) {
-                    ContentDocumentLink cdl = new ContentDocumentLink();
-                    cdl.ContentDocumentId = inserted.ContentDocumentId;
-                    cdl.LinkedEntityId = recordId;
-                    cdl.ShareType = 'V';
-                    cdl.Visibility = 'AllUsers';
-                    insert cdl;
-                }
-            }
-
-            return invokePromptTemplate(inserted.ContentDocumentId);
+            AnalysisResult result = new AnalysisResult();
+            result.aiResponse = invokePromptTemplate(inserted.ContentDocumentId);
+            result.contentDocumentId = inserted.ContentDocumentId;
+            return result;
         } catch (AuraHandledException e) {
             Database.rollback(sp);
             throw e;
@@ -98,7 +86,7 @@ public with sharing class SFSMobileImageAnalyserController {
     }
 
     @AuraEnabled
-    public static void saveAnalysis(String recordId, String analysisText) {
+    public static void saveAnalysis(String recordId, String analysisText, String contentDocumentId) {
         try {
             if (String.isBlank(recordId)) {
                 throw new AuraHandledException('Record Id is required.');
@@ -106,16 +94,29 @@ public with sharing class SFSMobileImageAnalyserController {
             if (String.isBlank(analysisText)) {
                 throw new AuraHandledException('Analysis text is required.');
             }
-            ServiceAppointment sa = [
-                SELECT Id, ServiceNote
-                FROM ServiceAppointment
-                WHERE Id = :recordId
-                LIMIT 1
-            ];
+
+            ServiceAppointment sa = [SELECT Id, ServiceNote FROM ServiceAppointment WHERE Id = :recordId LIMIT 1];
             String timestamp = DateTime.now().format('dd MMM yyyy HH:mm', UserInfo.getTimeZone().getID());
             String newEntry = '--- AI Image Analysis (' + timestamp + ') ---\n' + analysisText;
             sa.ServiceNote = String.isBlank(sa.ServiceNote) ? newEntry : sa.ServiceNote + '\n\n' + newEntry;
             update sa;
+
+            if (String.isNotBlank(contentDocumentId)) {
+                List<ContentDocumentLink> existing = [
+                    SELECT Id
+                    FROM ContentDocumentLink
+                    WHERE ContentDocumentId = :contentDocumentId AND LinkedEntityId = :recordId
+                    LIMIT 1
+                ];
+                if (existing.isEmpty()) {
+                    ContentDocumentLink cdl = new ContentDocumentLink();
+                    cdl.ContentDocumentId = contentDocumentId;
+                    cdl.LinkedEntityId = recordId;
+                    cdl.ShareType = 'V';
+                    cdl.Visibility = 'AllUsers';
+                    insert cdl;
+                }
+            }
         } catch (AuraHandledException e) {
             throw e;
         } catch (Exception e) {

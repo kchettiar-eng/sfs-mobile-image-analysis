@@ -18,6 +18,7 @@ export default class SfsMobileImageAnalyser extends LightningElement {
     @track errorMessage = '';
     @track hasResult = false;
     @track aiResponse = '';
+    @track contentDocumentId = '';
     @track hasSaved = false;
     @track isSaving = false;
     @track isOnline = true;
@@ -250,11 +251,13 @@ export default class SfsMobileImageAnalyser extends LightningElement {
         this.hasResult = false;
 
         try {
-            this.aiResponse = await analyseImage({
+            const result = await analyseImage({
                 recordId: this.recordId,
                 fileName: this.selectedFileName,
                 base64Data: this.base64Data
             });
+            this.aiResponse = result.aiResponse;
+            this.contentDocumentId = result.contentDocumentId;
             this.hasResult = true;
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Analysis Complete',
@@ -278,7 +281,8 @@ export default class SfsMobileImageAnalyser extends LightningElement {
         try {
             await saveAnalysis({
                 recordId: this.recordId,
-                analysisText: this.aiResponse
+                analysisText: this.aiResponse,
+                contentDocumentId: this.contentDocumentId
             });
             this.hasResult = false;
             this.hasSaved = true;
@@ -342,15 +346,16 @@ export default class SfsMobileImageAnalyser extends LightningElement {
     }
 
     _clearState() {
-        this.selectedFile     = null;
-        this.selectedFileName = '';
-        this.selectedFileSize = 0;
-        this.base64Data       = '';
-        this.imagePreviewUrl  = '';
-        this.hasError         = false;
-        this.errorMessage     = '';
-        this.hasResult        = false;
-        this.aiResponse       = '';
-        this.hasSaved         = false;
+        this.selectedFile        = null;
+        this.selectedFileName    = '';
+        this.selectedFileSize    = 0;
+        this.base64Data          = '';
+        this.imagePreviewUrl     = '';
+        this.hasError            = false;
+        this.errorMessage        = '';
+        this.hasResult           = false;
+        this.aiResponse          = '';
+        this.contentDocumentId   = '';
+        this.hasSaved            = false;
     }
 }

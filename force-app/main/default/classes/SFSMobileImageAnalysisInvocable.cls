@@ -12,11 +12,13 @@ public with sharing class SFSMobileImageAnalysisInvocable {
         for (Request req : requests) {
             Result result = new Result();
             try {
-                result.analysisResult = SFSMobileImageAnalyserController.analyseImage(
+                SFSMobileImageAnalyserController.AnalysisResult ar = SFSMobileImageAnalyserController.analyseImage(
                     req.recordId,
                     req.fileName,
                     req.base64Data
                 );
+                result.analysisResult = ar.aiResponse;
+                result.contentDocumentId = ar.contentDocumentId;
                 result.success = true;
             } catch (Exception e) {
                 result.analysisResult = 'Error: ' + e.getMessage();
@@ -42,6 +44,9 @@ public with sharing class SFSMobileImageAnalysisInvocable {
     public class Result {
         @InvocableVariable(label='Analysis Result')
         public String analysisResult;
+
+        @InvocableVariable(label='Content Document Id')
+        public String contentDocumentId;
 
         @InvocableVariable(label='Success')
         public Boolean success;
